@@ -1,1 +1,6 @@
 D:\Working Area\C#\csv_converter\csv_converter_bowden2016\bin\Debug\csv_converter_bowden2016.exe.config
+D:\Working Area\C#\csv_converter\csv_converter_bowden2016\bin\Debug\csv_converter_bowden2016.exe
+D:\Working Area\C#\csv_converter\csv_converter_bowden2016\bin\Debug\csv_converter_bowden2016.pdb
+D:\Working Area\C#\csv_converter\csv_converter_bowden2016\obj\Debug\csv_converter_bowden2016.exe
+D:\Working Area\C#\csv_converter\csv_converter_bowden2016\obj\Debug\csv_converter_bowden2016.pdb
+D:\Working Area\C#\csv_converter\csv_converter_bowden2016\obj\Debug\csv_converter_bowden2016.csprojResolveAssemblyReference.cache
