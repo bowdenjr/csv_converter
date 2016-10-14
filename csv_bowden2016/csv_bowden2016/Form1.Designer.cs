@@ -56,6 +56,7 @@
             this.btnOutputBrowse.TabIndex = 0;
             this.btnOutputBrowse.Text = "Select Folder";
             this.btnOutputBrowse.UseVisualStyleBackColor = true;
+            this.btnOutputBrowse.Click += new System.EventHandler(this.btnOutputBrowse_Click);
             // 
             // btnConvert
             // 
@@ -65,6 +66,7 @@
             this.btnConvert.TabIndex = 1;
             this.btnConvert.Text = "Convert";
             this.btnConvert.UseVisualStyleBackColor = true;
+            this.btnConvert.Click += new System.EventHandler(this.btnConvert_Click);
             // 
             // strIntputPath
             // 
@@ -106,6 +108,7 @@
             this.btnCancel.TabIndex = 1;
             this.btnCancel.Text = "Cancel";
             this.btnCancel.UseVisualStyleBackColor = true;
+            this.btnCancel.Click += new System.EventHandler(this.btnCancel_Click);
             // 
             // Form1
             // 
