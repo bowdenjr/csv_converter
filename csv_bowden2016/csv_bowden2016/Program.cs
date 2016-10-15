@@ -10,7 +10,6 @@ namespace csv_bowden2016
     {
         [STAThread]
 
-
         static void Main() //Default code from Visual Studio to get form to run
         {
             Application.EnableVisualStyles();

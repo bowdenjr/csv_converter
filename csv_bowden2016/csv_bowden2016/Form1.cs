@@ -6,7 +6,7 @@ using System.IO;
 
 /*
     Author = Jonathan Bowden
-    Latest build = 15 Oct 2016
+    Initial build = 15 Oct 2016
     Purpose = Asks the user for a incremental claims csv file and creates an output file, creating cumulative data in triangle form.
     Description = After the user has specified the file and output folder, the following steps are performed:
         (1) Each claim line of the input csv file is split by comma and has each data item stored in an "inc_claim_line" object. 
@@ -35,18 +35,26 @@ namespace csv_bowden2016
 
         private void btnInputBrowse_Click(object sender, EventArgs e) //BROWSE FOR INPUT FILE
         {
-            OpenFileDialog openFileDialog1 = new OpenFileDialog();
-            openFileDialog1.ShowDialog();
-            strInputFile = openFileDialog1.FileName;
-            strIntputPath.Text = strInputFile;
+            try
+            {
+                OpenFileDialog openFileDialog1 = new OpenFileDialog();
+                openFileDialog1.ShowDialog();
+                strInputFile = openFileDialog1.FileName;
+                strIntputPath.Text = strInputFile;
+            }
+            catch (Exception) { }
         }
 
         private void btnOutputBrowse_Click(object sender, EventArgs e) //BROWSE FOR OUTPUT FODLER
         {
-            FolderBrowserDialog SelectFolderDialog1 = new FolderBrowserDialog();
-            SelectFolderDialog1.ShowDialog();
-            strOutptutFolder = SelectFolderDialog1.SelectedPath;
-            strOutputPath.Text = strOutptutFolder;
+            try
+            {
+                FolderBrowserDialog SelectFolderDialog1 = new FolderBrowserDialog();
+                SelectFolderDialog1.ShowDialog();
+                strOutptutFolder = SelectFolderDialog1.SelectedPath;
+                strOutputPath.Text = strOutptutFolder;
+            }
+            catch (Exception) { };
         }
 
         private void btnCancel_Click(object sender, EventArgs e) // CANCEL CLICK
@@ -70,7 +78,8 @@ namespace csv_bowden2016
 
         public static void Convert()
         {
-            StreamWriter outputfile = new StreamWriter(strOutptutFolder + "\\outputfile" + DateTime.Now.ToString("ddMMyy-HHmmss") + ".csv");
+            StreamWriter outputfile = new StreamWriter(strOutptutFolder + "\\outputfile" 
+                                                + DateTime.Now.ToString("ddMMyy-HHmmss") + ".csv");
 
             // MAIN PRODCEDURE
             #region Step1
@@ -79,15 +88,28 @@ namespace csv_bowden2016
 
             foreach (var row in File.ReadLines(strInputFile).Skip(1))
             {
-                var data = row.Split(',');
+                string[] data = row.Split(',');
 
-                Lines.Add(new inc_claim_line //Add the csv split data to an inc_claim_line object
+                try
                 {
-                    strProductName = data[0],
-                    intOriginYr = int.Parse(data[1]),
-                    intDevelopYr = int.Parse(data[2]),
-                    dblIncVal = double.Parse(data[3]),
-                });
+                    if (data.Count() != 4) { throw new ArgumentNullException(); } //Throw exception if there are more than 4 subsrtings
+
+                    Lines.Add(new inc_claim_line //Add the csv split data to an inc_claim_line object
+                    {
+                        strProductName = data[0],
+                        intOriginYr = int.Parse(data[1]),
+                        intDevelopYr = int.Parse(data[2]),
+                        dblIncVal = double.Parse(data[3]),
+                    });
+                }
+                catch (Exception) //Catches improper data formats and more than 4 substrings in each line
+                {
+                    MessageBox.Show(
+                        null,
+                        "The input file data is not in the correct format. Please clean the data and retry.",
+                        null,MessageBoxButtons.OK,MessageBoxIcon.Error);
+                    Environment.Exit(0);
+                }
             }
             #endregion
 
@@ -102,7 +124,11 @@ namespace csv_bowden2016
             {
                 intMinOriginYr = Math.Min(Lines[i].intOriginYr, intMinOriginYr);
                 intMaxOriginYr = Math.Max(Lines[i].intOriginYr, intMaxOriginYr);
-                intMaxDevYr = Math.Max((Lines[i].intDevelopYr - Lines[i].intOriginYr), intMaxDevYr);
+            }
+
+            for (int i = 0; i < Lines.Count; i++) //Loop to find max dev year, separate from above because intMinOriginYr is needed
+            {
+                intMaxDevYr = Math.Max(Lines[i].intDevelopYr - intMinOriginYr, intMaxDevYr);
             }
 
             outputfile.Write(intMinOriginYr + ", " + (intMaxDevYr + 1));
@@ -125,8 +151,8 @@ namespace csv_bowden2016
             //Step 4 - Set up arrays and indicator variables
             int intColumns = 0;
 
-            // Calculate how large the claim arrays need to be: Add a decreasing number, starting at max dev year, to the column count, until hit 1 (the current year)
-            for(int i = intMaxDevYr + 1 ; i > 0; i--)
+            // Calculate how large the claim arrays need to be: Add a decreasing number to the column count, starting at max dev year, until the latest year
+            for (int i = intMaxDevYr + 1 ; i > 0; i--)
             {
                 intColumns += i;
             }
@@ -134,9 +160,9 @@ namespace csv_bowden2016
             double[] dblInc_Claims = new double[intColumns]; //array to hold incremental values
             double[] dblCml_Claims = new double[intColumns]; //array to hold cumulative values
 
-            Dictionary<int, int> yearstartingpos = new Dictionary<int, int>(); // Dictionary to store the array starting positions of each origin year (ie where dev year = 0)
+            // Dictionary to store the array starting positions of each origin year (ie where dev year = 0)
+            Dictionary<int, int> yearstartingpos = new Dictionary<int, int>(); 
             yearstartingpos.Add(intMinOriginYr, 0); // Add the initial zero value
-
 
             // Loop for each origin year (except the first) and assign its starting column position to the yearstartingpos dictionary
             for (int i = 1; i < (intMaxDevYr+1); i++)
@@ -155,7 +181,8 @@ namespace csv_bowden2016
                 {
                     if (Lines[i].strProductName == product)
                     {
-                        intColPosition = yearstartingpos[Lines[i].intOriginYr] + (Lines[i].intDevelopYr - Lines[i].intOriginYr); // Add the development year to the starting column position dictionary
+                        // Add the development year to the starting column position dictionary for where the claim amount should be in the array
+                        intColPosition = yearstartingpos[Lines[i].intOriginYr] + (Lines[i].intDevelopYr - Lines[i].intOriginYr); 
                         dblInc_Claims[intColPosition] = Lines[i].dblIncVal;
                     }
                 }
@@ -180,6 +207,7 @@ namespace csv_bowden2016
                     j--;
                 }
 
+                //Print to file
                 outputfile.Write(product + ",");
 
                 for (int i = 0; i < intColumns; i++)
@@ -189,10 +217,16 @@ namespace csv_bowden2016
 
                 outputfile.WriteLine();
 
+                //Clear arrays for each product
+                Array.Clear(dblInc_Claims, 0, dblInc_Claims.Length);
+                Array.Clear(dblCml_Claims, 0, dblCml_Claims.Length);
+
             } // end of product loop
             #endregion
+
+            MessageBox.Show(null, "Procedure complete successfully", null, MessageBoxButtons.OK, MessageBoxIcon.Information);
             outputfile.Close();
-            Application.Exit();
+            Environment.Exit(1);
         }
     }
 }
