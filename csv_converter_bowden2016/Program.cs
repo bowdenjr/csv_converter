@@ -23,8 +23,8 @@ namespace csv_converter_bowden2016
 
         static void Main()
         {
-            string strFilename = "C:\\Users\\897333\\Documents\\2. FILES\\inputfile.csv"; // change this accordingly, allow user entry?
-            var outputfile = new StreamWriter("C:\\Users\\897333\\Documents\\2. FILES\\outputfile.csv"); // change this accordingly, allow user entry?
+            string strFilename = "D:\\Desktop\\Test Area\\inputfile.csv"; // change this accordingly, allow user entry?
+            TextWriter outputfile = new StreamWriter("D:\\Desktop\\Test Area\\" + "outputfile.csv"); // change this accordingly, allow user entry?
             
             // MAIN PRODCEDURE
 

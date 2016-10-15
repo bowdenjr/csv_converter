@@ -7,3 +7,12 @@ C:\Users\897333\Documents\1.01 CODE\csv_converter\csv_bowden2016\csv_bowden2016\
 C:\Users\897333\Documents\1.01 CODE\csv_converter\csv_bowden2016\csv_bowden2016\obj\Debug\csv_bowden2016.exe
 C:\Users\897333\Documents\1.01 CODE\csv_converter\csv_bowden2016\csv_bowden2016\obj\Debug\csv_bowden2016.pdb
 C:\Users\897333\Documents\1.01 CODE\csv_converter\csv_bowden2016\csv_bowden2016\obj\Debug\csv_bowden2016.csprojResolveAssemblyReference.cache
+D:\Working Area\C#\csv_converter\csv_bowden2016\csv_bowden2016\bin\Debug\csv_bowden2016.exe.config
+D:\Working Area\C#\csv_converter\csv_bowden2016\csv_bowden2016\obj\Debug\csv_bowden2016.exe
+D:\Working Area\C#\csv_converter\csv_bowden2016\csv_bowden2016\obj\Debug\csv_bowden2016.pdb
+D:\Working Area\C#\csv_converter\csv_bowden2016\csv_bowden2016\obj\Debug\csv_bowden2016.csprojResolveAssemblyReference.cache
+D:\Working Area\C#\csv_converter\csv_bowden2016\csv_bowden2016\obj\Debug\csv_bowden2016.Form1.resources
+D:\Working Area\C#\csv_converter\csv_bowden2016\csv_bowden2016\obj\Debug\csv_bowden2016.Properties.Resources.resources
+D:\Working Area\C#\csv_converter\csv_bowden2016\csv_bowden2016\obj\Debug\csv_bowden2016.csproj.GenerateResource.Cache
+D:\Working Area\C#\csv_converter\csv_bowden2016\csv_bowden2016\bin\Debug\csv_bowden2016.exe
+D:\Working Area\C#\csv_converter\csv_bowden2016\csv_bowden2016\bin\Debug\csv_bowden2016.pdb

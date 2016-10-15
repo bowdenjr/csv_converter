@@ -44,7 +44,7 @@
             this.btnInputBrowse.Name = "btnInputBrowse";
             this.btnInputBrowse.Size = new System.Drawing.Size(75, 23);
             this.btnInputBrowse.TabIndex = 0;
-            this.btnInputBrowse.Text = "Browse";
+            this.btnInputBrowse.Text = "Browse...";
             this.btnInputBrowse.UseVisualStyleBackColor = true;
             this.btnInputBrowse.Click += new System.EventHandler(this.btnInputBrowse_Click);
             // 
@@ -54,7 +54,7 @@
             this.btnOutputBrowse.Name = "btnOutputBrowse";
             this.btnOutputBrowse.Size = new System.Drawing.Size(120, 23);
             this.btnOutputBrowse.TabIndex = 0;
-            this.btnOutputBrowse.Text = "Select Folder";
+            this.btnOutputBrowse.Text = "Select Folder...";
             this.btnOutputBrowse.UseVisualStyleBackColor = true;
             this.btnOutputBrowse.Click += new System.EventHandler(this.btnOutputBrowse_Click);
             // 
