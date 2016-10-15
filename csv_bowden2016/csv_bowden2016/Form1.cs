@@ -4,14 +4,26 @@ using System.Linq;
 using System.Windows.Forms;
 using System.IO;
 
+/*
+    Author = Jonathan Bowden
+    Latest build = 15 Oct 2016
+    Purpose = Asks the user for a incremental claims csv file and creates an output file, creating cumulative data in triangle form.
+    Description = After the user has specified the file and output folder, the following steps are performed:
+        (1) Each claim line of the input csv file is split by comma and has each data item stored in an "inc_claim_line" object. 
+        (2) The minimum and maximum origin years are found. From this the maximum development year is calculated and this is output 
+            as the first line of the output file.
+        (3) A list of products is made to determine how many different product loops are required
+        (4) Various arrays and parameters are set up, including a dictionary that stores each years starting development year (year-0)
+            in the main incremental and cumulative claims arrays
+        (5) Each line of the csv file has its incremental claim value added to an array. This array is then converted into cumulative
+            data. This is done at the product level and printed to the file.
+*/
+
 namespace csv_bowden2016
 {
     
     public partial class Form1 : Form
     {
-
-        
-
         // VARIABLES FOR ACCESS IN MULTIPLE METHODS
         static string strInputFile;
         static string strOutptutFolder;
@@ -24,7 +36,7 @@ namespace csv_bowden2016
         private void btnInputBrowse_Click(object sender, EventArgs e) //BROWSE FOR INPUT FILE
         {
             OpenFileDialog openFileDialog1 = new OpenFileDialog();
-            openFileDialog1.ShowDialog(); //Exception occurs here on pressing browse button, something to do with variables?
+            openFileDialog1.ShowDialog();
             strInputFile = openFileDialog1.FileName;
             strIntputPath.Text = strInputFile;
         }
@@ -58,22 +70,18 @@ namespace csv_bowden2016
 
         public static void Convert()
         {
-            StreamWriter outputfile = new StreamWriter(strOutptutFolder + "\\outputfile.csv");
+            StreamWriter outputfile = new StreamWriter(strOutptutFolder + "\\outputfile" + DateTime.Now.ToString("ddMMyy-HHmmss") + ".csv");
 
             // MAIN PRODCEDURE
-
             #region Step1
             //Step1 Extract the lines from the csv file and, using the split method, store each line as an inc_claim_line object
-
             List<inc_claim_line> Lines = new List<inc_claim_line>(); // list collection of all of the csv lines
 
             foreach (var row in File.ReadLines(strInputFile).Skip(1))
             {
-                // Step 1.01 - split data line
                 var data = row.Split(',');
 
-                // Step 1.02 - add new claim line object to the Lines list, with data from step 1.01 
-                Lines.Add(new inc_claim_line
+                Lines.Add(new inc_claim_line //Add the csv split data to an inc_claim_line object
                 {
                     strProductName = data[0],
                     intOriginYr = int.Parse(data[1]),
@@ -86,8 +94,8 @@ namespace csv_bowden2016
             #region Step2
 
             //Step 2 - find minimum and maximum origin years and maximum development period and print
-            int intMinOriginYr = Lines[0].intOriginYr; //starting dummy value
-            int intMaxOriginYr = Lines[0].intOriginYr;
+            int intMinOriginYr = Lines[0].intOriginYr; 
+            int intMaxOriginYr = Lines[0].intOriginYr; 
             int intMaxDevYr = 0;
 
             for (int i = 0; i < Lines.Count; i++) //Loop through Lines finding the required extremes
@@ -97,16 +105,14 @@ namespace csv_bowden2016
                 intMaxDevYr = Math.Max((Lines[i].intDevelopYr - Lines[i].intOriginYr), intMaxDevYr);
             }
 
-            //Print
-            outputfile.Write(intMinOriginYr + ", " + (intMaxDevYr + 1)); //Add one to include the zero-th development year
+            outputfile.Write(intMinOriginYr + ", " + (intMaxDevYr + 1));
             outputfile.WriteLine();
 
             #endregion
 
             #region Step3
             //Step 3 - Define a list of products
-
-            List<string> Products = new List<string>(); //Create a list of products
+            List<string> Products = new List<string>();
 
             for (int i = 0; i < Lines.Count; i++) //Populate list of products from csv file
             {
@@ -116,64 +122,77 @@ namespace csv_bowden2016
             #endregion
 
             #region Step4
-            //Step 4 - For each product, store incremental claims from csv in an array, convert that array to cumulative and print to file
+            //Step 4 - Set up arrays and indicator variables
+            int intColumns = 0;
 
-            int intColumns = (intMaxOriginYr - intMinOriginYr + 1) * (intMaxDevYr + 1); //Controls how large the arrays need to be
+            // Calculate how large the claim arrays need to be: Add a decreasing number, starting at max dev year, to the column count, until hit 1 (the current year)
+            for(int i = intMaxDevYr + 1 ; i > 0; i--)
+            {
+                intColumns += i;
+            }
 
-            double[] dblInc_Claims = new double[intColumns]; //array to hold cumulative values
-            double[] dblCum_Claims = new double[intColumns]; //array to hold cumulative values
+            double[] dblInc_Claims = new double[intColumns]; //array to hold incremental values
+            double[] dblCml_Claims = new double[intColumns]; //array to hold cumulative values
 
+            Dictionary<int, int> yearstartingpos = new Dictionary<int, int>(); // Dictionary to store the array starting positions of each origin year (ie where dev year = 0)
+            yearstartingpos.Add(intMinOriginYr, 0); // Add the initial zero value
+
+
+            // Loop for each origin year (except the first) and assign its starting column position to the yearstartingpos dictionary
+            for (int i = 1; i < (intMaxDevYr+1); i++)
+            {
+                yearstartingpos.Add(intMinOriginYr + i, yearstartingpos[(intMinOriginYr + i - 1)] + (intMaxDevYr + 1) - i + 1);
+            }
+            #endregion
+
+            #region Step5
+            //Step 5 - For each product, store incremental claims from csv in an array, convert that array to cumulative and print to file
             int intColPosition = 0;
-
+            
             foreach (string product in Products)
             {
                 for (int i = 0; i < Lines.Count; i++) //loop to determine the column position of the claim amount from the csv in the output array
                 {
                     if (Lines[i].strProductName == product)
                     {
-                        intColPosition = (Lines[i].intOriginYr - intMinOriginYr) * (intMaxDevYr + 1) + (Lines[i].intDevelopYr - Lines[i].intOriginYr);
+                        intColPosition = yearstartingpos[Lines[i].intOriginYr] + (Lines[i].intDevelopYr - Lines[i].intOriginYr); // Add the development year to the starting column position dictionary
                         dblInc_Claims[intColPosition] = Lines[i].dblIncVal;
                     }
                 }
 
+                int j = intMaxDevYr + 1; // controls how many dev years to run for when converting to cumulative, start at maximum number
+                
                 //Convert to cumulative
-                for (int i = 0; i < (intMaxOriginYr - intMinOriginYr + 1); i++)
+                foreach (var yearpos in yearstartingpos.Values)
                 {
-                    for (int j = 0; j <= intMaxDevYr; j++)
+                    for (int k = 0; k < j; k++)
                     {
-                        if (j == 0)
+                        if(k == 0)
                         {
-                            dblCum_Claims[((intMaxDevYr + 1) * i) + j] = dblInc_Claims[((intMaxDevYr + 1) * i) + j];
+                            dblCml_Claims[yearpos] = dblInc_Claims[yearpos];
                         }
                         else
                         {
-                            dblCum_Claims[((intMaxDevYr + 1) * i) + j] = dblCum_Claims[((intMaxDevYr + 1) * i) + j - 1] + dblInc_Claims[((intMaxDevYr + 1) * i) + j];
+                            dblCml_Claims[yearpos + k] = dblCml_Claims[yearpos + k - 1] + dblInc_Claims[yearpos + k];
                         }
+                        
                     }
+                    j--;
                 }
 
                 outputfile.Write(product + ",");
 
                 for (int i = 0; i < intColumns; i++)
                 {
-                    outputfile.Write(dblCum_Claims[i] + ",");
+                    outputfile.Write(dblCml_Claims[i] + ",");
                 }
 
                 outputfile.WriteLine();
 
             } // end of product loop
-
-            outputfile.Flush();
+            #endregion
             outputfile.Close();
-
-            Array.Clear(dblInc_Claims, 0, dblInc_Claims.Length);
-            Array.Clear(dblCum_Claims, 0, dblCum_Claims.Length);
-                        
             Application.Exit();
-
         }
-
-        #endregion
-        
     }
 }

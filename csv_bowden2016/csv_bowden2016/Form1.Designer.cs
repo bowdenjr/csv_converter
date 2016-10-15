@@ -74,6 +74,7 @@
             this.strIntputPath.Name = "strIntputPath";
             this.strIntputPath.Size = new System.Drawing.Size(425, 20);
             this.strIntputPath.TabIndex = 2;
+            this.strIntputPath.Text = "<Input File>";
             // 
             // strOutputPath
             // 
@@ -81,6 +82,7 @@
             this.strOutputPath.Name = "strOutputPath";
             this.strOutputPath.Size = new System.Drawing.Size(379, 20);
             this.strOutputPath.TabIndex = 2;
+            this.strOutputPath.Text = "<Output Folder>";
             // 
             // label1
             // 
