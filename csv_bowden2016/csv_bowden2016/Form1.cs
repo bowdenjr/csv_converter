@@ -12,9 +12,9 @@ using System.IO;
         (1) Each claim line of the input csv file is split by comma and has each data item stored in an "inc_claim_line" object. 
         (2) The minimum and maximum origin years are found. From this the maximum development year is calculated and this is output 
             as the first line of the output file.
-        (3) A list of products is made to determine how many different product loops are required
+        (3) A list of products is made to determine how many different product loops are required.
         (4) Various arrays and parameters are set up, including a dictionary that stores each years starting development year (year-0)
-            in the main incremental and cumulative claims arrays
+            in the main incremental and cumulative claims arrays.
         (5) Each line of the csv file has its incremental claim value added to an array. This array is then converted into cumulative
             data. This is done at the product level and printed to the file.
 */
